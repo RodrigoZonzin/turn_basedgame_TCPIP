@@ -4,6 +4,7 @@
 #include <sys/socket.h>
 #include <string.h>
 
+#include "odd_even.h"
 
 int main(){
 
@@ -26,17 +27,37 @@ int main(){
     int client; 
     char buffer[150];
 
+    Player *A = create_player(1, 10); 
+    Player *B = create_player(1, 11);
+
+    int playerAThrow = 3, 
+        playerBThrow = 0;
+
+    int result;        
+
+    char message_to_client[] = "Hello. Please insert 0 if you want even and 1 otherwhise.\nAlso insert the Id you want and the number you want to play"; 
+    
     while(1){
         client = accept(server, (struct sockaddr*)&client_addr, &client_size); 
 
         recv(client, buffer, sizeof(buffer), 0);
+        write(client, message_to_client, strlen(message_to_client));
+        sscanf(buffer, "%d %d %d", &B->choice, &B->id, &playerBThrow);
+        
 
-        printf("\nMessage sucessfully received from user %d: %s\n", client_addr.sin_addr.s_addr, buffer); 
+        result = decide(A, playerAThrow, B, playerBThrow);
+
+        write(client, result, sizeof(result));
+
+
+        
 
         memset(&buffer, 0, sizeof(buffer));
-        close(client);
+        //close(client);
     }
 
 
     return 0; 
 }
+
+
