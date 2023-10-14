@@ -54,17 +54,21 @@ int main(int argc, char *argv[]){
     }
     fprintf(stdout, "Conexao efetuada com sucesso\n");
 
-    char input_valor[1];
-    while(1){
+    while (1) {
         memset(buffer_in, 0x0, sizeof(buffer_in));
+        memset(buffer_out, 0x0, sizeof(buffer_out));
+        
+        //mensagem "Jogue um numero:\n"
+        recv(sockfd, buffer_in, sizeof(buffer_in), 0);
+        printf("%s", buffer_in); 
+        
+        //Receptando a jogada do usuario e transmitindo-a para o servidor
+        fgets(buffer_out, sizeof(buffer_out), stdin);
+        send(sockfd, buffer_out, strlen(buffer_out), 0);
+
+        //resposta ganhou ou perdeu
         recv(sockfd, buffer_in, sizeof(buffer_in), 0); 
-        fprintf(stdout, "%s\n", buffer_in); 
-        fprintf(stdout, ">>");
-        scanf("%c", input_valor); 
-
-        send(sockfd, input_valor, sizeof(input_valor), 0);
-
-
+        printf("%s", buffer_in); 
     }
 
     close(sockfd);

@@ -18,8 +18,6 @@ int main() {
     struct sockaddr_in server, client1, client2;
     int serverfd, client1fd, client2fd = -1; // Inicialize clientfd
 
-    char buffer[BUF_LEN];
-
     fprintf(stdout, "Inicializando o server\n");
 
     //criando o socket do server
@@ -62,6 +60,7 @@ int main() {
         perror("Erro de conexao do primeiro jogador");
         return EXIT_FAILURE;
     }
+    fprintf(stdout, "Primeiro jogador conectado com sucesso!\n");
 
     //conectando o segundo cliente
     socklen_t client2_len = sizeof(client2);
@@ -69,50 +68,63 @@ int main() {
         perror("Erro de conexao do segundo jogador");
         return EXIT_FAILURE;
     }
-    //registro de boas vindas
-    fprintf(stdout, "Os jogadores foram conectados com sucesso\n");
+    fprintf(stdout, "Primeiro jogador conectado com sucesso!\n");
+    fprintf(stdout, "Prontos para comecar!\n");
 
-    char mensagem_jogada[100];
+    char buffer_out[100], buffer_in[100];
 
     while(1){
         int jogadaDe1, jogadaDe2, resultado = 0; 
-        strcpy(mensagem_jogada, "Jogue um numero: \n");
+        memset(buffer_in, 0x0, sizeof(buffer_in));
+        memset(buffer_out, 0x0, sizeof(buffer_out));
 
-        send(client1fd, mensagem_jogada, strlen(mensagem_jogada), 0);
-        if(recv(client1fd, buffer, sizeof(buffer), 0) <= 0){
+
+        strcpy(buffer_out, "Jogue um numero:\n");
+        
+        //ENVIANDO COMANDO DE JOGADA PARA O PRIMEIRO CLIENTE 
+        //SUA RESPOSTA RESPOSTA EM UMA VARIAVEL JOGADA
+        send(client1fd, buffer_out, strlen(buffer_out), 0);
+        if(recv(client1fd, buffer_in, sizeof(buffer_in), 0) <= 0){
             perror("Erro ao receber jogada do primeiro jogador"); 
             return EXIT_FAILURE;
         }
-        sscanf(buffer, "%d", &jogadaDe1); 
+        sscanf(buffer_in, "%d", &jogadaDe1); 
 
-        send(client2fd, mensagem_jogada, strlen(mensagem_jogada), 0);
-        if(recv(client2fd, buffer, sizeof(buffer), 0) <= 0){
-            perror("Erro ao receber jogada do primeiro jogador"); 
+
+        send(client2fd, buffer_out, strlen(buffer_out), 0);
+        if(recv(client2fd, buffer_in, sizeof(buffer_in), 0) <= 0){
+            perror("Erro ao receber jogada do segundo jogador"); 
             return EXIT_FAILURE;
         }
-        sscanf(buffer, "%d", &jogadaDe2); 
+        sscanf(buffer_in, "%d", &jogadaDe2); 
 
+
+        //COMPUTANDO O RESULTADO, QUE É A MAIOR JOGADA DE ALGUM 
+        //DOS DOIS JOGADORES
         resultado = max(jogadaDe1, jogadaDe2);
 
+        //CASO O RESULTADO SEJA IGUAL A JOGADA DO JOGADOR 1
+        //ENVIAMOS PARA ELE A MENSAGEM DE PARABENIZACAO E
+        //ENVIAMOS PARA O JOGADOR 2 A MENSAGEM DE PESAR
         if(resultado == jogadaDe1){
             printf("Jogador 1 ganhou!\n");
-            strcpy(mensagem_jogada, "Parabens! Voce venceu!\n\n");
-            send(client1fd, mensagem_jogada, strlen(mensagem_jogada), 0); 
+            strcpy(buffer_out, "Parabens! Voce venceu!\n");
+            send(client1fd, buffer_out, strlen(buffer_out), 0); 
             
-            strcpy(mensagem_jogada, "Que pena! Voce perdeu!\n\n");
-            send(client2fd, mensagem_jogada, strlen(mensagem_jogada), 0); 
+            strcpy(buffer_out, "Que pena! Voce perdeu!\n");
+            send(client2fd, buffer_out, strlen(buffer_out), 0); 
         }
 
-        else if(resultado == jogadaDe2){
+        if(resultado == jogadaDe2){
             printf("Jogador 2 ganhou!\n");
-            strcpy(mensagem_jogada, "Parabens! Voce venceu!\n\n");
-            send(client2fd, mensagem_jogada, strlen(mensagem_jogada), 0); 
+            strcpy(buffer_out, "Parabens! Voce venceu!\n");
+            send(client2fd, buffer_out, strlen(buffer_out), 0); 
             
-            strcpy(mensagem_jogada, "Que pena! Voce perdeu!\n\n");
-            send(client1fd, mensagem_jogada, strlen(mensagem_jogada), 0); 
+            strcpy(buffer_out, "Que pena! Voce perdeu!\n");
+            send(client1fd, buffer_out, strlen(buffer_out), 0); 
         }
 
-        strcpy(buffer, "Deseja continuar?\n"); 
+        //strcpy(buffer, "Deseja continuar?\n"); 
         
         /*char continuar1, continuar2; 
         send(client1fd, buffer, sizeof(buffer), 0);
