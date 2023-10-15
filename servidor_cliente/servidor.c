@@ -71,10 +71,12 @@ int main() {
     fprintf(stdout, "Primeiro jogador conectado com sucesso!\n");
     fprintf(stdout, "Prontos para comecar!\n");
 
-    char buffer_out[100], buffer_in[100];
+    char buffer_in [BUF_LEN];  memset(buffer_in, 0x0, BUF_LEN);
+    char buffer_out[BUF_LEN]; memset(buffer_out, 0x0, BUF_LEN);
+    int jogadaDe1, jogadaDe2, resultado = 0;
 
     while(1){
-        int jogadaDe1, jogadaDe2, resultado = 0; 
+        jogadaDe1, jogadaDe2, resultado = 0; 
         memset(buffer_in, 0x0, sizeof(buffer_in));
         memset(buffer_out, 0x0, sizeof(buffer_out));
 
@@ -88,7 +90,8 @@ int main() {
             perror("Erro ao receber jogada do primeiro jogador"); 
             return EXIT_FAILURE;
         }
-        sscanf(buffer_in, "%d", &jogadaDe1); 
+        sscanf(buffer_in, "%d", &jogadaDe1);
+        memset(buffer_in, 0x0, sizeof(buffer_in));
 
 
         send(client2fd, buffer_out, strlen(buffer_out), 0);
@@ -97,6 +100,7 @@ int main() {
             return EXIT_FAILURE;
         }
         sscanf(buffer_in, "%d", &jogadaDe2); 
+        memset(buffer_in, 0x0, sizeof(buffer_in));
 
 
         //COMPUTANDO O RESULTADO, QUE É A MAIOR JOGADA DE ALGUM 
@@ -110,18 +114,22 @@ int main() {
             printf("Jogador 1 ganhou!\n");
             strcpy(buffer_out, "Parabens! Voce venceu!\n");
             send(client1fd, buffer_out, strlen(buffer_out), 0); 
+            memset(buffer_out, 0x0, sizeof(buffer_out));
             
             strcpy(buffer_out, "Que pena! Voce perdeu!\n");
             send(client2fd, buffer_out, strlen(buffer_out), 0); 
+            memset(buffer_out, 0x0, sizeof(buffer_out));
         }
 
         if(resultado == jogadaDe2){
             printf("Jogador 2 ganhou!\n");
             strcpy(buffer_out, "Parabens! Voce venceu!\n");
             send(client2fd, buffer_out, strlen(buffer_out), 0); 
+            memset(buffer_out, 0x0, sizeof(buffer_out));
             
             strcpy(buffer_out, "Que pena! Voce perdeu!\n");
             send(client1fd, buffer_out, strlen(buffer_out), 0); 
+            memset(buffer_out, 0x0, sizeof(buffer_out));
         }
 
         //strcpy(buffer, "Deseja continuar?\n"); 
