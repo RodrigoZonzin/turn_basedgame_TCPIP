@@ -4,14 +4,13 @@
 #include <stdbool.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
+#include <unistd.h>
 
-#define PORT 5002
+#define PORT 4002
 #define BUF_LEN 4096
-#define SERVER_ADDR "127.0.0.1"
 
 
 int main(int argc, char *argv[]){
-
     struct sockaddr_in server;
     int sockfd;
 
@@ -28,12 +27,13 @@ int main(int argc, char *argv[]){
     }
     //fprintf(stdout, "Cliente criado com socket: %d\n", sockfd);
 
-
+    memset(server.sin_zero, 0x0, sizeof(server.sin_zero));
+    //memset(server.sin_port, 0x0, sizeof(server.sin_port));
+    //memset(server.sin_addr.s_addr, 0x0, sizeof(server.sin_addr.s_addr));
     //propriedades do server a se conectar
     server.sin_family = AF_INET;
     server.sin_port = htons(PORT);
     server.sin_addr.s_addr = INADDR_ANY; //inet_addr(SERVER_ADDR);
-    memset(server.sin_zero, 0x0, 8);
 
 
     /* Tries to connect to the server */
@@ -43,6 +43,8 @@ int main(int argc, char *argv[]){
     }
     fprintf(stdout, "Conexao efetuada com sucesso\n");
 
+    int *resposta;
+    int saida;
     while (1) {
         //memset(buffer_in, 0x0, sizeof(buffer_in));
         //memset(buffer_out, 0x0, sizeof(buffer_out));
@@ -50,13 +52,13 @@ int main(int argc, char *argv[]){
         //mensagem "Jogue um numero:\n"
         recv(sockfd, buffer_in, sizeof(buffer_in), 0);
         fprintf(stdout, "%s", buffer_in); 
-        memset(buffer_in, 0x0, sizeof(buffer_in));
+        //memset(buffer_in, 0x0, sizeof(buffer_in));
         
 
         //Receptando a jogada do usuario e transmitindo-a para o servidor
-        fgets(buffer_out, sizeof(buffer_out), stdin);
-        send(sockfd, buffer_out, strlen(buffer_out), 0);
-        memset(buffer_out, 0x0, sizeof(buffer_out));
+        scanf("%d", &saida);
+        send(sockfd, &saida, sizeof(int), 0);
+        //memset(buffer_out, 0x0, sizeof(buffer_out));
 
         //resposta ganhou ou perdeu
         recv(sockfd, buffer_in, sizeof(buffer_in), 0); 
