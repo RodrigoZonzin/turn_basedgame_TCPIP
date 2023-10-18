@@ -6,7 +6,7 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 
-#define PORT 4002
+#define PORT 5002
 #define BUF_LEN 4096
 
 
@@ -25,7 +25,6 @@ int main(int argc, char *argv[]){
         perror("Erro na criacao do socket do cliente:");
         return EXIT_FAILURE;
     }
-    //fprintf(stdout, "Cliente criado com socket: %d\n", sockfd);
 
     memset(server.sin_zero, 0x0, sizeof(server.sin_zero));
     //memset(server.sin_port, 0x0, sizeof(server.sin_port));
@@ -36,8 +35,8 @@ int main(int argc, char *argv[]){
     server.sin_addr.s_addr = INADDR_ANY; //inet_addr(SERVER_ADDR);
 
 
-    /* Tries to connect to the server */
-    if (connect(sockfd, (struct sockaddr*) &server, len) == -1) {
+    //TENTA SE CONECTAR AO SERVER
+    if(connect(sockfd, (struct sockaddr*) &server, len) == -1){
         perror("Nao foi possivel se conectar ao server");
         return EXIT_FAILURE;
     }

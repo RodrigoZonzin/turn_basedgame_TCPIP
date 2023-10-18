@@ -5,7 +5,7 @@
 #include <string.h>
 #include <unistd.h>
 
-#define PORT 4002
+#define PORT 5002
 #define BUF_LEN 4096
 
 #define DEBUGA printf("CU CU CU CU\n"); 
@@ -23,7 +23,8 @@ int main(){
     printf("Inicializando o server\n");
 
     //CRIANDO O DESCRITOR DE ARQUIVOS PARA O SOCKET DO SERVER
-    if(serverfd = socket(AF_INET, SOCK_STREAM, 0) == -1){
+    serverfd = socket(AF_INET, SOCK_STREAM, 0);
+    if(serverfd == -1){
         perror("Nao foi possivel criar o socket: ");
         return EXIT_FAILURE;
     }
@@ -69,7 +70,7 @@ int main(){
         return EXIT_FAILURE;
     }
     fprintf(stdout, "Segundo jogador conectado com sucesso!\n");
-    fprintf(stdout, "Prontos para comecar!\n");
+    fprintf(stdout, "Prontos para comecar!\n\n");
 
     char buffer_in [BUF_LEN];  memset(buffer_in, 0x0, BUF_LEN);
     char buffer_out[BUF_LEN];  memset(buffer_out, 0x0, BUF_LEN);
