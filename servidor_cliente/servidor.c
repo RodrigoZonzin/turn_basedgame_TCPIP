@@ -77,7 +77,7 @@ int main(){
     int jogadaDe1, jogadaDe2, resultado = 0;
 
     while(1){
-        jogadaDe1, jogadaDe2, resultado = 0; 
+        jogadaDe1 = jogadaDe2 = resultado = 0; 
         memset(buffer_in, 0x0, sizeof(buffer_in));
         memset(buffer_out, 0x0, sizeof(buffer_out));
 

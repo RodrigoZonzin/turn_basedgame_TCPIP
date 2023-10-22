@@ -56,6 +56,7 @@ int main(int argc, char *argv[]){
 
         //Receptando a jogada do usuario e transmitindo-a para o servidor
         scanf("%d", &saida);
+        getchar();
         send(sockfd, &saida, sizeof(int), 0);
         //memset(buffer_out, 0x0, sizeof(buffer_out));
 
