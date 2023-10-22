@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdbool.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <unistd.h>
@@ -76,8 +75,6 @@ int main(int argc, char *argv[]){
             printf("Jogador desistiu. Desconectando...\n");
             break;
         }
-
-
     }
 
     close(sockfd);

@@ -10,7 +10,6 @@
 
 #define DEBUGA printf("CU CU CU CU\n"); 
 
-int contador = 0;
 
 int max(int a, int b){
     return (a >= b) ? a : b; 
@@ -72,17 +71,12 @@ int main(){
     fprintf(stdout, "Segundo jogador conectado com sucesso!\n");
     fprintf(stdout, "Prontos para comecar!\n\n");
 
-    char buffer_in [BUF_LEN];  memset(buffer_in, 0x0, BUF_LEN);
-    char buffer_out[BUF_LEN];  memset(buffer_out, 0x0, BUF_LEN);
     int comandoJogada; 
     int jogadaDe1, jogadaDe2, resultado = 0;
     int respostaJogador1, respostaJogador2 = -1; 
 
     while(1){
         jogadaDe1 = jogadaDe2 = resultado = 0; 
-        memset(buffer_in, 0x0, sizeof(buffer_in));
-        memset(buffer_out, 0x0, sizeof(buffer_out));
-
         /*COMANDO DE JOGADA*/
         comandoJogada = 1;              
 
