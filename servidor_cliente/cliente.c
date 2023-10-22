@@ -42,28 +42,42 @@ int main(int argc, char *argv[]){
     }
     fprintf(stdout, "Conexao efetuada com sucesso\n");
 
-    int *resposta;
-    int saida;
-    while (1) {
-        //memset(buffer_in, 0x0, sizeof(buffer_in));
-        //memset(buffer_out, 0x0, sizeof(buffer_out));
-        
-        //mensagem "Jogue um numero:\n"
-        recv(sockfd, buffer_in, sizeof(buffer_in), 0);
-        fprintf(stdout, "%s", buffer_in); 
-        //memset(buffer_in, 0x0, sizeof(buffer_in));
-        
+    int autorizacao, saida, resposta;
+    while(1){
+        recv(sockfd, &autorizacao, sizeof(int), 0);
+        if(autorizacao == 1){
+            printf("Jogue um numero:\n");
+        }
 
         //Receptando a jogada do usuario e transmitindo-a para o servidor
-        scanf("%d", &saida);
-        getchar();
+        scanf("%d", &saida); getchar();
         send(sockfd, &saida, sizeof(int), 0);
-        //memset(buffer_out, 0x0, sizeof(buffer_out));
+
 
         //resposta ganhou ou perdeu
-        recv(sockfd, buffer_in, sizeof(buffer_in), 0); 
-        fprintf(stdout, "%s\n", buffer_in); 
-        memset(buffer_in, 0x0, sizeof(buffer_in));
+        recv(sockfd, &resposta, sizeof(int), 0); 
+        if(resposta == 1){
+            printf("Parabens! Voce ganhou!\n\n");
+        }
+        else if(resposta == 0){
+            printf("Que pena! Voce Perdeu!\n\n");
+        }
+
+        //continuar jogando ou nao?
+        printf("Deseja parar de jogar? Sim (1) ou Nao (0)\n");
+        scanf("%d", &saida);
+        
+        //envia mensagem de continuar jogada ou nao
+        send(sockfd, &saida, sizeof(int), 0);
+
+        //recebe mensagem de desconexao ou nao de algum jogador
+        recv(sockfd, &resposta, sizeof(int), 0);
+        if(resposta == 1){
+            printf("Jogador desistiu. Desconectando...\n");
+            break;
+        }
+
+
     }
 
     close(sockfd);

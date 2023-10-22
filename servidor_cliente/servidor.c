@@ -74,7 +74,9 @@ int main(){
 
     char buffer_in [BUF_LEN];  memset(buffer_in, 0x0, BUF_LEN);
     char buffer_out[BUF_LEN];  memset(buffer_out, 0x0, BUF_LEN);
+    int comandoJogada; 
     int jogadaDe1, jogadaDe2, resultado = 0;
+    int respostaJogador1, respostaJogador2 = -1; 
 
     while(1){
         jogadaDe1 = jogadaDe2 = resultado = 0; 
@@ -82,10 +84,10 @@ int main(){
         memset(buffer_out, 0x0, sizeof(buffer_out));
 
         /*COMANDO DE JOGADA*/
-        strcpy(buffer_out, "Jogue um numero:\n");               
-        
+        comandoJogada = 1;              
+
         //ENVIANDO PARA O PRIMEIRO JOGADOR
-        send(client1fd, buffer_out, strlen(buffer_out), 0);        
+        send(client1fd, &comandoJogada, sizeof(int), 0);        
         if(recv(client1fd, &jogadaDe1, sizeof(int), 0) <= 0){
             perror("Erro ao receber jogada do primeiro jogador"); 
             return EXIT_FAILURE;
@@ -93,7 +95,7 @@ int main(){
         printf("Jogada de cliente 1: %d\n", jogadaDe1);
 
         //ENVIANDO PARA O SEGUNDO JOGADOR
-        send(client2fd, buffer_out, strlen(buffer_out), 0);
+        send(client2fd, &comandoJogada, sizeof(int), 0);
         if(recv(client2fd, &jogadaDe2, sizeof(int), 0) <= 0){
             perror("Erro ao receber jogada do segundo jogador"); 
             return EXIT_FAILURE;
@@ -107,25 +109,36 @@ int main(){
         //ENVIAMOS PARA ELE A MENSAGEM DE PARABENIZACAO E
         //ENVIAMOS PARA O JOGADOR 2 A MENSAGEM DE PESAR
         if(resultado == jogadaDe1){
+            respostaJogador1 = 1, respostaJogador2 = 0;
             printf("Jogador 1 ganhou!\n\n");
-            strcpy(buffer_out, "Parabens! Voce venceu!\n");
-            send(client1fd, buffer_out, strlen(buffer_out), 0); 
-            memset(buffer_out, 0x0, sizeof(buffer_out));
-            
-            strcpy(buffer_out, "Que pena! Voce perdeu!\n");
-            send(client2fd, buffer_out, strlen(buffer_out), 0); 
-            memset(buffer_out, 0x0, sizeof(buffer_out));
+
+            send(client1fd, &respostaJogador1, sizeof(int), 0);             
+            send(client2fd, &respostaJogador2, sizeof(int), 0); 
         }
 
         if(resultado == jogadaDe2){
+            respostaJogador1 = 0, respostaJogador2 = 1;
             printf("Jogador 2 ganhou!\n\n");
-            strcpy(buffer_out, "Parabens! Voce venceu!\n");
-            send(client2fd, buffer_out, strlen(buffer_out), 0); 
-            memset(buffer_out, 0x0, sizeof(buffer_out));
-            
-            strcpy(buffer_out, "Que pena! Voce perdeu!\n");
-            send(client1fd, buffer_out, strlen(buffer_out), 0); 
-            memset(buffer_out, 0x0, sizeof(buffer_out));
+        
+            send(client1fd, &respostaJogador1, sizeof(int), 0);             
+            send(client2fd, &respostaJogador2, sizeof(int), 0); 
+        }
+
+        //recebe mensagem de continuar jogada ou nao
+        recv(client1fd, &jogadaDe1, sizeof(int), 0);
+        recv(client2fd, &jogadaDe2, sizeof(int), 0);
+
+        //envia mensagem de desconexao
+        if((jogadaDe1 == 1) || (jogadaDe2 == 1)){
+            respostaJogador1 = respostaJogador2 = 1;
+            send(client1fd, &respostaJogador1, sizeof(int), 0);
+            send(client2fd, &respostaJogador2, sizeof(int), 0);
+            break;
+        }
+        else{
+            respostaJogador1 = respostaJogador2 = 0;
+            send(client1fd, &respostaJogador1, sizeof(int), 0);
+            send(client2fd, &respostaJogador2, sizeof(int), 0);
         }
 
     }
